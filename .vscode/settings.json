@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "tdrn-org",
+        "projectKey": "tdrn-org_go-pool"
+    }
+}
