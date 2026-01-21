@@ -10,6 +10,10 @@ package pool
 
 import "errors"
 
+// ErrPoolClosing indicates this pool instance is currently
+// shutting down and about to be closed.
+var ErrPoolClosing error = errors.New("pool closing")
+
 // ErrPoolClosed indicates this pool instance has already
 // been closed.
 var ErrPoolClosed error = errors.New("pool closed")

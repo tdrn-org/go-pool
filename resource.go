@@ -73,6 +73,9 @@ func (p *Resources[R]) runTrigger() {
 func (p *Resources[R]) runHouseKeepingTrigger() {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
+	if p.closing {
+		return
+	}
 	p.runHouseKeepingTriggerLocked()
 }
 
@@ -186,6 +189,9 @@ func (p *Resources[R]) SetResourceMaxLifetime(d time.Duration) {
 func (p *Resources[R]) Get(ctx context.Context) (*Resource[R], error) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
+	if p.closing {
+		return nil, ErrPoolClosing
+	}
 	// Existing (idle) resource available
 	resourceIndex := len(p.idleQueue) - 1
 	if resourceIndex >= 0 {
@@ -280,6 +286,7 @@ func (p *Resources[R]) Close() error {
 	for _, resource := range p.idleQueue {
 		closeErrs = append(closeErrs, resource.value.Close())
 	}
+	p.idleQueue = p.idleQueue[:0]
 	return errors.Join(closeErrs...)
 }
 
