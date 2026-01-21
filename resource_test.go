@@ -189,8 +189,8 @@ type resourcePoolTester struct {
 }
 
 func (tester *resourcePoolTester) run(t *testing.T, resources *pool.Resources[*fileResource], user, volume int) {
+	tester.startedWG.Add(user)
 	for range user {
-		tester.startedWG.Add(1)
 		time.Sleep(tester.jitter())
 		go tester.runUser(t, resources, volume)
 	}
@@ -208,7 +208,7 @@ func (tester *resourcePoolTester) runUser(t *testing.T, resources *pool.Resource
 		}
 	}
 	tester.startedWG.Done()
-	time.Sleep(tester.jitter())
+	time.Sleep(2 * tester.jitter())
 	for _, r := range rs {
 		r.Release()
 	}
