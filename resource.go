@@ -225,7 +225,7 @@ func (p *Resources[R]) Get(ctx context.Context) (*Resource[R], error) {
 	return resource, nil
 }
 
-func (p *Resources[R]) put(resource *Resource[R]) {
+func (p *Resources[R]) releaseResource(resource *Resource[R]) {
 	if !resource.active {
 		p.logger.Warn("superflous release of resource")
 		return
@@ -314,5 +314,5 @@ func (r *Resource[R]) Reset() {
 
 // Release transfers ownership of the resource back to the pool.
 func (r *Resource[R]) Release() {
-	r.pool.put(r)
+	r.pool.releaseResource(r)
 }
