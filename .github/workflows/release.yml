@@ -1,0 +1,27 @@
+name: release
+
+# Tags a new version when nothing but dependencies changed since the last tag.
+# The gate itself lives in tdrn-org/.github — this file only decides when to run
+# it and grants the permission it needs.
+#
+# dry-run is false: the gate has been verified in go-conf on 2026-09-27 (it
+# returned the same verdict as the manual gate script). Set it back to true if a
+# repository needs another trial run before it releases on its own.
+
+on:
+  workflow_run:
+    workflows: [build]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write      # required: a called workflow can only narrow permissions
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    uses: tdrn-org/.github/.github/workflows/release-go-library.yml@main
+    with:
+      sha: ${{ github.event.workflow_run.head_sha || github.sha }}
+      dry-run: false
